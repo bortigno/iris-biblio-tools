@@ -1,4 +1,4 @@
-# iris-bibliography-tools
+# iris-biblio-tools
 Tools to handle bibliography in IRIS
 
 
