@@ -136,11 +136,11 @@ def update_publication_dictiornary(input_file, pub_dictionary, doi):
 #login
 def iris_login(driver):
 
-  username_box = driver.find_element_by_name('username')
+  username_box = driver.find_element_by_name('j_username')
   username_box.send_keys('pierluigi.bortignon')
-  psw_box = driver.find_element_by_name('password')
-  psw_box.send_keys('***********')
-  invia_bt = driver.find_element_by_name('submit')
+  psw_box = driver.find_element_by_name('j_password')
+  psw_box.send_keys('cagliari_10892')
+  invia_bt = driver.find_element_by_name('_eventId_proceed')
   invia_bt.click()
   time.sleep(2) # Let the user actually see something!
 
@@ -225,15 +225,15 @@ def click_successivo(driver, workflow):
     if ( workflow == 1 ):
       button_next = driver.find_element_by_xpath('//*[@id="allAfterCollection"]/div[7]/div/input[2]') # bottone successivo in workflow 1
     if ( workflow == 2 ):
-      button_next = driver.find_element_by_xpath('//*[@id="allAfterCollection"]/div[33]/div/input[3]')
+      button_next = driver.find_element_by_xpath('//*[@id="allAfterCollection"]/div[36]/div/input[3]')
     if ( workflow == 3 ):
-      button_next = driver.find_element_by_xpath('//*[@id="allAfterCollection"]/div[5]/div/input[3]')
+      button_next = driver.find_element_by_xpath('//*[@id="allAfterCollection"]/div[5]/div/input[3]') # //*[@id="allAfterCollection"]/div[5]/div/input[3]
     if ( workflow == 4 ):
-      button_next = driver.find_element_by_xpath('//*[@id="uploadForm"]/div[4]/input[3]') #
+      button_next = driver.find_element_by_xpath('//*[@id="uploadForm"]/div[4]/input[3]') # //*[@id="uploadForm"]/div[4]/input[3]
     if ( workflow == 5 ):
-      button_next = driver.find_element_by_xpath('//*[@id="nextDiv"]/input')
+      button_next = driver.find_element_by_xpath('//*[@id="nextDiv"]/input') # //*[@id="nextDiv"]/input
     if ( workflow == 6 ):
-      button_next = driver.find_element_by_xpath('//*[@id="edit_metadata"]/div[3]/div[2]/input[2]') # this is the "Concludi" button
+      button_next = driver.find_element_by_xpath('//*[@id="edit_metadata"]/div[3]/div[2]/input[2]') # this is the "Concludi" button //*[@id="edit_metadata"]/div[3]/div[2]/input[2]
     button_next.click()
     time.sleep(5)
     return workflow+1
@@ -385,7 +385,7 @@ driver.implicitly_wait(10) # seconds
 #driver.execute_cdp_cmd("Network.setExtraHTTPHeaders", {"headers": {"User-Agent": "browserClientA"}})
 
 
-pub_dictionary = load_pub_dictionary('publication_dictionary.txt')
+pub_dictionary = load_pub_dictionary('data/publication_dictionary.txt')
 print(pub_dictionary)
 
 iris_login(driver)
@@ -416,7 +416,7 @@ for i in range(1,50) : # do it for 10 publications at the time
   workflow = edit_publication(driver, work_doi_api, table_doi)
   if( workflow == 7):
       print('Publication {0} added.'.format(table_doi))
-      update_publication_dictiornary('publication_dictionary.txt', pub_dictionary, table_doi)
+      update_publication_dictiornary('redo/publication_dictionary.txt', pub_dictionary, table_doi)
   time.sleep(2)
 
 print(pub_dictionary)
