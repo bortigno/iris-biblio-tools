@@ -206,6 +206,37 @@ def table_filter_provvisorio(driver):
   time.sleep(5)
 
 
+# Workflow 2
+def select_referee(driver):
+    arrow_down = driver.find_element_by_xpath('//*[@id="s2id_autogen3"]/a/span[2]')
+    arrow_down.click()
+    time.sleep(2)
+    esperti_anonimi = driver.find_element_by_xpath('//*[@id="select2-drop"]/ul/li[3]/div')
+    esperti_anonimi.click()
+    time.sleep(1)
+    return True
+
+def select_caratterizzazione_prevalente(driver):
+    arrow_down = driver.find_element_by_xpath('//*[@id="s2id_autogen7"]/a/span[2]')
+    arrow_down.click()
+    time.sleep(2)
+    scientifica = driver.find_element_by_xpath('//*[@id="select2-drop"]/ul/li[2]/div')
+    scientifica.click()
+    time.sleep(1)
+    return True
+
+# workflow 3
+def select_presenza_coautori_internazionali(driver):
+    arrow_down = driver.find_element_by_path('//*[@id="s2id_autogen1"]/a/span[2]')
+    arrow_down.click()
+    time.sleep(2)
+    yes = driver.find_element_by_path('//*[@id="select2-drop"]/ul/li[3]/div')
+    yes.click()
+    time.sleep(1)
+
+
+
+
 def enter_edit_publication(driver,table_entry_line):
     # should be better to get also the name of the publication and its doi here - integrating with the class
     actions_button_down = driver.find_element_by_xpath('//table/tbody/tr[{0}]/td[6]/div[1]/a[1]/i[2]'.format(table_entry_line))
@@ -337,6 +368,8 @@ def edit_publication(driver,work_doi_api,table_doi):
     if (table_doi != publication_doi):
         print('WARNING: Table doi different from workflow doi! {0}, {1}'.format(table_doi,publication_doi))
         driver.quit()
+    select_referee(driver)
+    select_caratterizzazione_prevalente(driver)
     workflow = click_successivo(driver,workflow)
   
   #now in workflow 3
@@ -348,6 +381,7 @@ def edit_publication(driver,work_doi_api,table_doi):
       workflow = click_successivo(driver, workflow)
     else:
       driver.quit()
+    select_presenza_coautori_internazionali(driver)
   
   if( workflow == 4 ):
     workflow = click_successivo(driver, workflow)
@@ -360,7 +394,6 @@ def edit_publication(driver,work_doi_api,table_doi):
   
   time.sleep(10)
   return workflow
-
 
 
 
