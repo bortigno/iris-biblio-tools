@@ -449,7 +449,7 @@ for i in range(1,50) : # do it for 10 publications at the time
   workflow = edit_publication(driver, work_doi_api, table_doi)
   if( workflow == 7):
       print('Publication {0} added.'.format(table_doi))
-      update_publication_dictiornary('redo/publication_dictionary.txt', pub_dictionary, table_doi)
+      update_publication_dictiornary('data/publication_dictionary.txt', pub_dictionary, table_doi)
   time.sleep(2)
 
 print(pub_dictionary)
