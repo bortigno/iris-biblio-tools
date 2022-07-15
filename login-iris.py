@@ -137,9 +137,9 @@ def update_publication_dictiornary(input_file, pub_dictionary, doi):
 def iris_login(driver):
 
   username_box = driver.find_element_by_name('j_username')
-  username_box.send_keys('pierluigi.bortignon')
+  username_box.send_keys('***')
   psw_box = driver.find_element_by_name('j_password')
-  psw_box.send_keys('cagliari_10892')
+  psw_box.send_keys('***')
   invia_bt = driver.find_element_by_name('_eventId_proceed')
   invia_bt.click()
   time.sleep(2) # Let the user actually see something!
