@@ -136,11 +136,11 @@ def update_publication_dictiornary(input_file, pub_dictionary, doi):
 #login
 def iris_login(driver):
 
-  username_box = driver.find_element_by_name('username')
-  username_box.send_keys('pierluigi.bortignon')
-  psw_box = driver.find_element_by_name('password')
-  psw_box.send_keys('***********')
-  invia_bt = driver.find_element_by_name('submit')
+  username_box = driver.find_element_by_name('j_username')
+  username_box.send_keys('***')
+  psw_box = driver.find_element_by_name('j_password')
+  psw_box.send_keys('***')
+  invia_bt = driver.find_element_by_name('_eventId_proceed')
   invia_bt.click()
   time.sleep(2) # Let the user actually see something!
 
@@ -206,6 +206,37 @@ def table_filter_provvisorio(driver):
   time.sleep(5)
 
 
+# Workflow 2
+def select_referee(driver):
+    arrow_down = driver.find_element_by_xpath('//*[@id="s2id_autogen3"]/a/span[2]')
+    arrow_down.click()
+    time.sleep(2)
+    esperti_anonimi = driver.find_element_by_xpath('//*[@id="select2-drop"]/ul/li[3]/div')
+    esperti_anonimi.click()
+    time.sleep(1)
+    return True
+
+def select_caratterizzazione_prevalente(driver):
+    arrow_down = driver.find_element_by_xpath('//*[@id="s2id_autogen7"]/a/span[2]')
+    arrow_down.click()
+    time.sleep(2)
+    scientifica = driver.find_element_by_xpath('//*[@id="select2-drop"]/ul/li[2]/div')
+    scientifica.click()
+    time.sleep(1)
+    return True
+
+# workflow 3
+def select_presenza_coautori_internazionali(driver):
+    arrow_down = driver.find_element_by_path('//*[@id="s2id_autogen1"]/a/span[2]')
+    arrow_down.click()
+    time.sleep(2)
+    yes = driver.find_element_by_path('//*[@id="select2-drop"]/ul/li[3]/div')
+    yes.click()
+    time.sleep(1)
+
+
+
+
 def enter_edit_publication(driver,table_entry_line):
     # should be better to get also the name of the publication and its doi here - integrating with the class
     actions_button_down = driver.find_element_by_xpath('//table/tbody/tr[{0}]/td[6]/div[1]/a[1]/i[2]'.format(table_entry_line))
@@ -225,15 +256,15 @@ def click_successivo(driver, workflow):
     if ( workflow == 1 ):
       button_next = driver.find_element_by_xpath('//*[@id="allAfterCollection"]/div[7]/div/input[2]') # bottone successivo in workflow 1
     if ( workflow == 2 ):
-      button_next = driver.find_element_by_xpath('//*[@id="allAfterCollection"]/div[33]/div/input[3]')
+      button_next = driver.find_element_by_xpath('//*[@id="allAfterCollection"]/div[36]/div/input[3]')
     if ( workflow == 3 ):
-      button_next = driver.find_element_by_xpath('//*[@id="allAfterCollection"]/div[5]/div/input[3]')
+      button_next = driver.find_element_by_xpath('//*[@id="allAfterCollection"]/div[5]/div/input[3]') # //*[@id="allAfterCollection"]/div[5]/div/input[3]
     if ( workflow == 4 ):
-      button_next = driver.find_element_by_xpath('//*[@id="uploadForm"]/div[4]/input[3]') #
+      button_next = driver.find_element_by_xpath('//*[@id="uploadForm"]/div[4]/input[3]') # //*[@id="uploadForm"]/div[4]/input[3]
     if ( workflow == 5 ):
-      button_next = driver.find_element_by_xpath('//*[@id="nextDiv"]/input')
+      button_next = driver.find_element_by_xpath('//*[@id="nextDiv"]/input') # //*[@id="nextDiv"]/input
     if ( workflow == 6 ):
-      button_next = driver.find_element_by_xpath('//*[@id="edit_metadata"]/div[3]/div[2]/input[2]') # this is the "Concludi" button
+      button_next = driver.find_element_by_xpath('//*[@id="edit_metadata"]/div[3]/div[2]/input[2]') # this is the "Concludi" button //*[@id="edit_metadata"]/div[3]/div[2]/input[2]
     button_next.click()
     time.sleep(5)
     return workflow+1
@@ -337,6 +368,8 @@ def edit_publication(driver,work_doi_api,table_doi):
     if (table_doi != publication_doi):
         print('WARNING: Table doi different from workflow doi! {0}, {1}'.format(table_doi,publication_doi))
         driver.quit()
+    select_referee(driver)
+    select_caratterizzazione_prevalente(driver)
     workflow = click_successivo(driver,workflow)
   
   #now in workflow 3
@@ -348,6 +381,7 @@ def edit_publication(driver,work_doi_api,table_doi):
       workflow = click_successivo(driver, workflow)
     else:
       driver.quit()
+    select_presenza_coautori_internazionali(driver)
   
   if( workflow == 4 ):
     workflow = click_successivo(driver, workflow)
@@ -360,7 +394,6 @@ def edit_publication(driver,work_doi_api,table_doi):
   
   time.sleep(10)
   return workflow
-
 
 
 
@@ -385,7 +418,7 @@ driver.implicitly_wait(10) # seconds
 #driver.execute_cdp_cmd("Network.setExtraHTTPHeaders", {"headers": {"User-Agent": "browserClientA"}})
 
 
-pub_dictionary = load_pub_dictionary('publication_dictionary.txt')
+pub_dictionary = load_pub_dictionary('data/publication_dictionary.txt')
 print(pub_dictionary)
 
 iris_login(driver)
@@ -416,7 +449,7 @@ for i in range(1,50) : # do it for 10 publications at the time
   workflow = edit_publication(driver, work_doi_api, table_doi)
   if( workflow == 7):
       print('Publication {0} added.'.format(table_doi))
-      update_publication_dictiornary('publication_dictionary.txt', pub_dictionary, table_doi)
+      update_publication_dictiornary('data/publication_dictionary.txt', pub_dictionary, table_doi)
   time.sleep(2)
 
 print(pub_dictionary)
