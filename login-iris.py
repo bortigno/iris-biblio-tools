@@ -428,7 +428,8 @@ iris_login(driver)
 #get some info from the html page
 #info_from_table(driver.page_source)
 
-table_filter_provvisorio(driver)
+# This is not needed anymore in the new interface because it provided by default the vista of bozze
+#table_filter_provvisorio(driver)
 
 #def edit_publication(driver,work_doi_api):
 
