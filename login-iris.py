@@ -48,16 +48,34 @@ def info_from_table(page_source):
           #for a in as_:
           #  print(a.get_text()) # this should be the summary 
 
+
+# in order to get the doi you need to open the pop-down menu "colonne" and include "DOI".
+def add_doi_to_table(driver):
+    open_pop_down_menu = driver.find_element_by_xpath('//*[@id="tablemyWorkspace_wrapper"]/div[1]/div/div[3]/div/div/button')
+    open_pop_down_menu.click()
+    time.sleep(1)
+    select_doi = driver.find_element_by_xpath('//*[@id="tablemyWorkspace_wrapper"]/div[1]/div/div[3]/div/div/div[2]/div/a[10]/span')
+    select_doi.click()
+    time.sleep(1)
+    return True 
+
 def get_doi_from_table(driver,table_entry_line):
-    summary = driver.find_element_by_xpath('//*[@id="mysubmissions"]/tbody/tr[{0}]/td[1]/a'.format(table_entry_line))
-    print(summary)
-    print(summary.text)
-    summary_str = summary.text
-    start = summary_str.find('DOI')+4
-    end = summary_str.find('. ',start)
-    doi = summary_str[start:end]
-    print('DOI from table : ' + doi)
-    return doi
+    add_doi_to_table(driver)
+    # this is just the first entry of the list (tr[1]). to get the second or more is tr[2] etc. 
+    # I think for the moment the first is enough because everytime a product in completed the script 
+    # goes back to the main table
+    doi = driver.find_element_by_xpath('//*[@id="tablemyWorkspaceBody"]/tr[1]/td[6]')
+    print(doi)
+    doi_string = doi.text 
+    #summary = driver.find_element_by_xpath('//*[@id="mysubmissions"]/tbody/tr[{0}]/td[1]/a'.format(table_entry_line))
+    #print(summary)
+    #print(summary.text)
+    #summary_str = summary.text
+    #start = summary_str.find('DOI')+4
+    #end = summary_str.find('. ',start)
+    #doi = summary_str[start:end]
+    print('DOI from table : {0}'.format(doi_string))
+    return doi_string
 
 
 
