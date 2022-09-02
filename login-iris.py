@@ -56,15 +56,18 @@ def add_doi_to_table(driver):
     time.sleep(1)
     select_doi = driver.find_element_by_xpath('//*[@id="tablemyWorkspace_wrapper"]/div[1]/div/div[3]/div/div/div[2]/div/a[10]/span')
     select_doi.click()
+    #remove the "ultima modifica" to the table
+    driver.find_element_by_xpath('//*[@id="tablemyWorkspace_wrapper"]/div[1]/div/div[3]/div/div/div[2]/div/a[4]/span').click()
+    # click the background to close the pop-down mwnu
+    driver.find_element_by_xpath('//*[@id="tablemyWorkspace_wrapper"]/div[1]/div/div[3]/div/div/div[1]').click()
     time.sleep(1)
     return True 
 
 def get_doi_from_table(driver,table_entry_line):
-    add_doi_to_table(driver)
     # this is just the first entry of the list (tr[1]). to get the second or more is tr[2] etc. 
     # I think for the moment the first is enough because everytime a product in completed the script 
     # goes back to the main table
-    doi = driver.find_element_by_xpath('//*[@id="tablemyWorkspaceBody"]/tr[1]/td[6]')
+    doi = driver.find_element_by_xpath('//*[@id="tablemyWorkspaceBody"]/tr[{0}]/td[5]'.format(table_entry_line))
     print(doi)
     doi_string = doi.text 
     #summary = driver.find_element_by_xpath('//*[@id="mysubmissions"]/tbody/tr[{0}]/td[1]/a'.format(table_entry_line))
@@ -225,56 +228,70 @@ def table_filter_provvisorio(driver):
 
 
 # Workflow 2
-def select_referee(driver):
-    arrow_down = driver.find_element_by_xpath('//*[@id="s2id_autogen3"]/a/span[2]')
+def select_referee(driver): 
+    #accept cookies
+    driver.find_element_by_xpath('/html/body/div[1]/div[2]/button').click()
+    driver.execute_script("window.scrollTo(0, 1500)")
+    time.sleep(1)
+    arrow_down = driver.find_element_by_xpath('//*[@id="dc_type_referee_content"]/div/div/span/span[1]/span')
     arrow_down.click()
-    time.sleep(2)
-    esperti_anonimi = driver.find_element_by_xpath('//*[@id="select2-drop"]/ul/li[3]/div')
+    time.sleep(1)
+    #searchbox = driver.get_element_by_xpath('/html/body/span[2]/span/span[1]/input')
+    #searchbox.sendkeys('Esperti anonimi')
+
+    esperti_anonimi = driver.find_element_by_xpath('//*[@id="dc_type_referee"]/option[3]')
     esperti_anonimi.click()
+    WebDriverWait(driver, 1).until(EC.element_to_be_clickable((By.XPATH, "//span[text()='Esperti anonimi']"))).click()
     time.sleep(1)
     return True
 
 def select_caratterizzazione_prevalente(driver):
-    arrow_down = driver.find_element_by_xpath('//*[@id="s2id_autogen7"]/a/span[2]')
+    arrow_down = driver.find_element_by_xpath('//*[@id="dc_type_caratterizzazione_content"]/div/div/span/span[1]/span')
     arrow_down.click()
-    time.sleep(2)
-    scientifica = driver.find_element_by_xpath('//*[@id="select2-drop"]/ul/li[2]/div')
+    time.sleep(1)
+    scientifica = driver.find_element_by_xpath('/html/body/span[2]/span/span[2]/ul/li[1]')#'//*[@id="dc_type_caratterizzazione"]/option[2]')
     scientifica.click()
+#    WebDriverWait(driver, 1).until(EC.element_to_be_clickable((By.XPATH, "//span[text()='Scientifica']"))).click()
+    #scientifica = driver.find_element_by_xpath('//*[@id="select2-drop"]/ul/li[2]/div')
+    #scientifica.click()
     time.sleep(1)
     return True
 
 # workflow 3
-def select_presenza_coautori_internazionali(driver):
-    arrow_down = driver.find_element_by_path('//*[@id="s2id_autogen1"]/a/span[2]')
+def select_presenza_coautori_internazionali(driver): 
+    arrow_down = driver.find_element_by_path('//*[@id="dc_description_international_content"]/div/div/span/span[1]/span/span[2]/b')#'//*[@id="s2id_autogen1"]/a/span[2]')
     arrow_down.click()
-    time.sleep(2)
-    yes = driver.find_element_by_path('//*[@id="select2-drop"]/ul/li[3]/div')
+    time.sleep(1)
+    yes = driver.find_element_by_path('/html/body/span[2]/span/span[2]/ul/li[2]')#'//*[@id="select2-drop"]/ul/li[3]/div')
     yes.click()
     time.sleep(1)
 
 
 
 
-def enter_edit_publication(driver,table_entry_line):
+def enter_edit_publication(driver,table_entry_line):  
     # should be better to get also the name of the publication and its doi here - integrating with the class
-    actions_button_down = driver.find_element_by_xpath('//table/tbody/tr[{0}]/td[6]/div[1]/a[1]/i[2]'.format(table_entry_line))
+    actions_button_down = driver.find_element_by_xpath('//*[@id="tablemyWorkspaceBody"]/tr[{0}]/td[6]/div/button'.format(table_entry_line))
+    print(actions_button_down)
     actions_button_down.click() # this is necessary to be able to have the visible_actions clickable
     # this is a safety guard to wait for the button_down click to be done.
-    visible_actions = WebDriverWait(driver, 20).until(EC.element_to_be_clickable((By.XPATH,'//table/tbody/tr[{0}]/td[6]/div[1]/ul[1]/li[1]/a[1]'.format(table_entry_line)) ) )
-    print(visible_actions.get_attribute('data-action'))
-    print(visible_actions.get_attribute('href'))
-    if (visible_actions.get_attribute('data-action') == 'resume' ):  visible_actions.click() # resume corresponds to "Completa inserimento"
-    else: 
-        print('Item is not resumable. Maybe no more item to be resumed. Quitting')
-        driver.quit()
-    time.sleep(10)
+    resume_actions = WebDriverWait(driver, 20).until(EC.element_to_be_clickable((By.XPATH,'//*[@id="tablemyWorkspaceBody"]/tr[{0}]/td[6]/div/ul/a[2]'.format(table_entry_line)) ) )
+    resume_actions.click()
+    #print(visible_actions.get_attribute('data-action'))
+    #print(visible_actions.get_attribute('href'))
+    
+    #if (visible_actions.get_attribute('data-action') == 'resume' ):  visible_actions.click() # resume corresponds to "Completa inserimento"
+    #else: 
+    #    print('Item is not resumable. Maybe no more item to be resumed. Quitting')
+    #    driver.quit()
+    time.sleep(5)
  
 
 def click_successivo(driver, workflow):
     if ( workflow == 1 ):
-      button_next = driver.find_element_by_xpath('//*[@id="allAfterCollection"]/div[7]/div/input[2]') # bottone successivo in workflow 1
+      button_next = driver.find_element_by_xpath('//*[@id="edit_metadata"]/div[3]/div/input[2]') # eottone successivo in workflow 1
     if ( workflow == 2 ):
-      button_next = driver.find_element_by_xpath('//*[@id="allAfterCollection"]/div[36]/div/input[3]')
+      button_next = driver.find_element_by_xpath('//*[@id="edit_metadata"]/div[3]/div/input[3]')
     if ( workflow == 3 ):
       button_next = driver.find_element_by_xpath('//*[@id="allAfterCollection"]/div[5]/div/input[3]') # //*[@id="allAfterCollection"]/div[5]/div/input[3]
     if ( workflow == 4 ):
@@ -308,7 +325,11 @@ def get_author_string(work_doi_api, publication_doi):
 
 def edit_author_string(driver, author_list):
     # in workflow 3
-    author_box = driver.find_element_by_xpath('//*[@id="widgetContributorSplitTextarea_dc_authority_people"]') 
+    try:
+      driver.find_element_by_xpath('//*[@id="contributorDialogueConfirm_dc_authority_people"]/div/div/div[3]/button[1]').click()
+    except:
+      print('No message box to close')
+    author_box = driver.find_element_by_xpath('//*[@id="widgetContributor_dc_authority_people"]') 
     if (author_box.is_enabled()): print('author_box enabled')
     else: print('author boc is not enabled')
     if (author_box.is_displayed()):  print('author_box displayed')
@@ -318,7 +339,7 @@ def edit_author_string(driver, author_list):
     pyperclip.copy(author_list)
     # here there is the possibility that the string of auhtors is not empty so I need to click on "Modifica stringa autori"
     if ( not author_box.is_displayed() ):
-        btn_edit_author_string = driver.find_element_by_xpath('//*[@id="widgetContributorEdit_dc_authority_people"]')
+        btn_edit_author_string = driver.find_element_by_xpath('//*[@id="widgetContributor_dc_authority_people"]')
         btn_edit_author_string.click()
     #author_box.send_keys(author_list) # very slow for long string
     #author_box.send_keys(pyperclip.paste( )) # still very slow
@@ -392,6 +413,7 @@ def edit_publication(driver,work_doi_api,table_doi):
   
   #now in workflow 3
   if (workflow == 3):
+    time.sleep(20)
     author_string = get_author_string(work_doi_api, publication_doi)
     edit_author_string(driver, author_string)
     author_in_db = select_author_from_author_string(driver)
@@ -410,7 +432,7 @@ def edit_publication(driver,work_doi_api,table_doi):
   if( workflow == 6 ): # last one
     workflow = click_successivo(driver, workflow)
   
-  time.sleep(10)
+  time.sleep(2)
   return workflow
 
 
@@ -454,6 +476,8 @@ iris_login(driver)
 table_line = 1
 
 for i in range(1,50) : # do it for 10 publications at the time
+  # this function is adding the doi colum to the table
+  add_doi_to_table(driver)
   table_doi = get_doi_from_table(driver,table_line)
   print('Editing DOI: ' + table_doi)
   
